@@ -40,41 +40,6 @@ public class JavaSocket{
 
 			}
 			
-			/*
-			// Receiving
-	        byte[] lenBytes = new byte[4];
-	        is.read(lenBytes, 0, 4);
-	        int len = (((lenBytes[3] & 0xff) << 24) | ((lenBytes[2] & 0xff) << 16) |
-	                  ((lenBytes[1] & 0xff) << 8) | (lenBytes[0] & 0xff));
-			String word = "Hello!";
-			byte[] bites = word.getBytes(StandardCharsets.UTF_8);\
-			while(is.read() != -1) {
-				System.out.println(is.read());
-			}
-	        byte[] receivedBytes = new byte[is.read()];
-	        is.read(receivedBytes);
-	        String received = new String(receivedBytes, "UTF-8");
-
-			//is.read(bites);
-			//System.out.println("len: " + len);
-			//String received = new String(receivedBytes, 0, 32);
-			//String rec = new String(bites, "UTF-8");
-
-			System.out.println("Server received: " + receivedBytes);
-			System.out.println("Server received: " + received);
-
-			// Sending
-	        String toSend = "Echo: " + bites;
-	        byte[] toSendBytes = toSend.getBytes();
-	        int toSendLen = toSendBytes.length;
-	        byte[] toSendLenBytes = new byte[4];
-	        toSendLenBytes[0] = (byte)(toSendLen & 0xff);
-	        toSendLenBytes[1] = (byte)((toSendLen >> 8) & 0xff);
-	        toSendLenBytes[2] = (byte)((toSendLen >> 16) & 0xff);
-	        toSendLenBytes[3] = (byte)((toSendLen >> 24) & 0xff);
-	        os.write(toSendLenBytes);
-	        os.write(toSendBytes);
-		*/
 
 		} catch(IOException ioe) {
 			System.out.println("ioe " + ioe.getMessage() );
@@ -94,8 +59,23 @@ public class JavaSocket{
 	}
 	
 	//broadcast win to all computers 
-	public void broadcast(ServerThread st) {
+	public void broadcast(String message, ServerThread st) {
 		//someone wins 
+		for(ServerThread thread : playerThreads) {
+			if(thread != st) {
+				thread.sendMessage(message);
+			}
+			
+		}
+	}
+	
+	public void deleteThread(ServerThread st) {
+		for(int i=0; i<playerThreads.size(); i++) {
+			if(playerThreads.get(i) == st) {
+				playerThreads.remove(i);
+			}
+		}
+		
 	}
 /*
 	private String receive(InputStream is, OutputStream os) {
@@ -170,9 +150,6 @@ public class JavaSocket{
 		new JavaSocket(6789);
 	}
 }
-
-
-
 
 /*
 
