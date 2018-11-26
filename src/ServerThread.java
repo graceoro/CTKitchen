@@ -103,17 +103,17 @@ public class ServerThread extends Thread {
 		return received;
 	}
 	
-	boolean keepGettingInput = true;
+	//boolean keepGettingInput = true;
 	boolean someoneKilled = false;
 	
 	public void run() {
 		try {
 			String result;
-//			boolean keepGettingInput = true;
+			boolean keepGettingInput = true;
 			boolean notFinishedGame = true;
 			
 			
-			while(true) {
+			//while(true) {
 				
 				//this loop handles login button 
 				while(keepGettingInput == true) {
@@ -122,39 +122,41 @@ public class ServerThread extends Thread {
 					result = checkDB(is, os);   //resturns username,dbNum
 					resultCheck(result);
 					
-				}
-				
-				String mymessage = null;
-				String winner = null;
-				String loser = null;
-				String killed = null;
-				
-				while(notFinishedGame == true) {
-					String received = receive(is);
 					
-					if(!received.isEmpty()) {
-						String[] stringArr  = received.split(",");
-						killed = stringArr[0];
-						winner = stringArr[1];
-						loser = stringArr[2];
-						
-						if(killed.equals("killed")) {
-							notFinishedGame = false;
-						}
-					}
+					
 				}
+//				
+//				String mymessage = null;
+//				String winner = null;
+//				String loser = null;
+//				String killed = null;
+//				
+//				while(notFinishedGame == true) {
+//					String received = receive(is);
+//					
+//					if(!received.isEmpty()) {
+//						String[] stringArr  = received.split(",");
+//						killed = stringArr[0];
+//						winner = stringArr[1];
+//						loser = stringArr[2];
+//						
+//						if(killed.equals("killed")) {
+//							notFinishedGame = false;
+//						}
+//					}
+//				}
+//				
+//				notFinishedGame = true;
+//				mymessage = winner + "," + loser;
+//				js.broadcast(mymessage, this);
+//				js.deleteThread(this);
+//				
 				
-				notFinishedGame = true;
-				mymessage = winner + "," + loser;
-				js.broadcast(mymessage, this);
-				js.deleteThread(this);
 				
 				
 				
 				
-				
-				
-			}
+			//}
 			
 			
 			
@@ -202,7 +204,7 @@ public class ServerThread extends Thread {
 		int dbResult = Integer.parseInt(resultArr[1]);
 		
 		if(dbResult == 1) {
-			keepGettingInput = false;
+			//keepGettingInput = false;
 			send(os, username, "Account Created!");
 		}
 		else if(dbResult == 2) {
@@ -213,6 +215,12 @@ public class ServerThread extends Thread {
 		}
 		else if(dbResult == 4) {
 			send(os, username, "Login Successful");
+		}
+		else if(dbResult == 5) {
+			send(os, "fail", "Username and Password must be filled in.");
+		}
+		else if(dbResult == 6) {
+			send(os, "fail", username);
 		}
 	}
 	
@@ -226,6 +234,11 @@ public class ServerThread extends Thread {
 		String username = arr[0];
 		String password = arr[1];
 		String whichButton = arr[2];
+		
+		if(whichButton.equals("finish")) {
+			return  username + " beat " + password + "," + 6;
+		}
+		
 
 		//jdbc
 		int dbNum = JDBC.checkDB(username, password, whichButton);

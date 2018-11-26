@@ -15,6 +15,8 @@ public class JDBC {
 		PreparedStatement ps = null;
 		Boolean usernameExists = false;
 		Boolean passwordCorrect = false;
+		
+		System.out.println("PASSWORD ----" + username + "----");
 
 		try {
 			System.out.println("Trying to connect to database... ");
@@ -40,87 +42,57 @@ public class JDBC {
 			 * 
 			 */
 			
-			
-			if(rs.isBeforeFirst() == false) {		//nothing in result set
-				if(whichButton.equals("register")) {
-					//insert into database
-					ps = conn.prepareStatement("INSERT INTO Users(username, password_, characterID) VALUES(?,?,?)");
-					ps.setString(1, username);
-					ps.setString(2, password);
-					ps.setInt(3, 0);
-					ps.executeUpdate();
-					System.out.println("----- return 1 ------");
-					return 1;		//created account
+			if(username.isEmpty() || password.isEmpty()) {
+				System.out.println("----- return 5 ------");
+				return 5;
+			}
+			else {
+				if(rs.isBeforeFirst() == false) {		//nothing in result set
+					if(whichButton.equals("register")) {
+						//insert into database
+						ps = conn.prepareStatement("INSERT INTO Users(username, password_, characterID) VALUES(?,?,?)");
+						ps.setString(1, username);
+						ps.setString(2, password);
+						ps.setInt(3, 0);
+						ps.executeUpdate();
+						System.out.println("----- return 1 ------");
+						return 1;		//created account
+					}
+					else if(whichButton.equals("login")) {
+						System.out.println("----- return 2 (!!!) ------");
+						return 2;
+					}
 				}
-				else if(whichButton.equals("login")) {
-					System.out.println("----- return 2 (!!!) ------");
-					return 2;
+				else {		//is something in result set
+					rs.next();		//STUPID
+					if(rs.getString("username").equals(username) && !rs.getString("password_").equals(password) && whichButton.equals("login")) {
+						System.out.println("----- return 2 ------");
+						return 2;
+					}
+					else if(rs.getString("username").equals(username) && whichButton.equals("register")) {
+						System.out.println();
+						System.out.println("DB USERNAME: " + rs.getString("username") + " DB PASSWORD: " + rs.getString("password_") );
+						System.out.println("Input username: " + username + " Input Password: " + password);
+						System.out.println();
+						
+						System.out.println("----- return 3 ------");
+						return 3;		//matching username and passwords
+					}
+					else if(rs.getString("username").equals(username) && rs.getString("password_").equals(password) && whichButton.equals("login")) {
+						System.out.println();
+						System.out.println("DB USERNAME: " + rs.getString("username") + " DB PASSWORD: " + rs.getString("password_") );
+						System.out.println("Input username: " + username + " Input Password: " + password);
+						System.out.println();
+						
+						System.out.println("----- return 4 ------");
+						return 4;		//username and password do match
+					}
+					
+					
 				}
 			}
-			else {		//is something in result set
-				rs.next();		//STUPID
-				if(rs.getString("username").equals(username) && !rs.getString("password_").equals(password) && whichButton.equals("login")) {
-					System.out.println("----- return 2 ------");
-					return 2;
-				}
-				else if(rs.getString("username").equals(username) && whichButton.equals("register")) {
-					System.out.println();
-					System.out.println("DB USERNAME: " + rs.getString("username") + " DB PASSWORD: " + rs.getString("password_") );
-					System.out.println("Input username: " + username + " Input Password: " + password);
-					System.out.println();
-					
-					System.out.println("----- return 3 ------");
-					return 3;		//matching username and passwords
-				}
-				else if(rs.getString("username").equals(username) && rs.getString("password_").equals(password) && whichButton.equals("login")) {
-					System.out.println();
-					System.out.println("DB USERNAME: " + rs.getString("username") + " DB PASSWORD: " + rs.getString("password_") );
-					System.out.println("Input username: " + username + " Input Password: " + password);
-					System.out.println();
-					
-					System.out.println("----- return 4 ------");
-					return 4;		//username and password do match
-				}
-			}
 			
-//			
-//			
-//			if(rs.next() == false && whichButton.equals("register")) {
-//				//insert into database
-//				ps = conn.prepareStatement("INSERT INTO Users(username, password_, characterID) VALUES(?,?,?)");
-//				ps.setString(1, username);
-//				ps.setString(2, password);
-//				ps.setInt(3, 0);
-//				ps.executeUpdate();
-//				System.out.println("----- return 1 ------");
-//				return 1;		//created account
-//			}
-//			else if(/*(rs.next() == false && whichButton.equals("login")) 
-//					|| */(rs.getString("username").equals(username) && !rs.getString("password_").equals(password) && whichButton.equals("login")) ) {
-//				
-//				System.out.println("----- return 2 ------");
-//				return 2;
-//			}
-////			else if(rs.next() == false && whichButton.equals("login")) {
-////				System.out.println("----- return 2 (!!!) ------");
-////				return 2;
-////			}
-//			else {
-//				
-//				System.out.println();
-//				System.out.println("DB USERNAME: " + rs.getString("username") + " DB PASSWORD: " + rs.getString("password_") );
-//				System.out.println("Input username: " + username + " Input Password: " + password);
-//				System.out.println();
-//				
-//				if(rs.getString("username").equals(username) && whichButton.equals("register")) {
-//					System.out.println("----- return 3 ------");
-//					return 3;		//matching username and passwords
-//				}
-//				else if(rs.getString("username").equals(username) && rs.getString("password_").equals(password) && whichButton.equals("login")) {
-//					System.out.println("----- return 4 ------");
-//					return 4;		//username and password do match
-//				}
-//			}
+			
 		} catch(SQLException sqle) {
 			System.out.println("sqle: " + sqle.getMessage());
 			sqle.printStackTrace();
